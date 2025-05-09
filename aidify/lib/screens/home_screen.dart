@@ -9,32 +9,28 @@ class HomeScreen extends StatelessWidget {
       body: Stack(
         children: [
           // Background
-          Container(
-            width: 412,
-            height: 917,
-            color: Colors.white,
-          ),
+          Container(width: 412, height: 917, color: Colors.white),
 
           // Top Navbar
           Positioned(
             top: 0,
             left: 0,
             right: 0,
-            height: 69,
+            height: 80,
             child: Container(
               color: Color(0xFFF6E2E2),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 16, top: 10),
+                    padding: const EdgeInsets.only(left: 16, top: 12),
                     child: Image.asset(
                       'assets/images/logo_image1.png',
                       height: 49.77,
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(right: 16, top: 10),
+                    padding: const EdgeInsets.only(right: 16, top: 15),
                     child: Icon(Icons.person),
                   ),
                 ],
@@ -47,15 +43,15 @@ class HomeScreen extends StatelessWidget {
             top: 135,
             left: 23,
             child: Container(
-              width: 363,
+              width: 320,
               height: 59,
               decoration: BoxDecoration(
                 color: Color(0xFFD9D9D9),
                 borderRadius: BorderRadius.circular(50),
               ),
               child: Padding(
-                padding: const EdgeInsets.only(left: 20, top: 13),
-                child: Icon(Icons.search_outlined, size: 32),
+                padding: const EdgeInsets.only(right: 0, top: 13),
+                child: Icon(Icons.search_outlined, size: 30),
               ),
             ),
           ),
@@ -71,19 +67,34 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   buildHorizontalScrollSection(
                     title: "Quick Help",
-                    cards: ["Sprain", "Snake bite"],
+                    cards: [
+                      {"label": "Sprain", "image": "assets/images/sprain.jpg"},
+                      {"label": "Snake Bite", "image": "assets/images/snake.png"},
+                    ],
                   ),
                   buildHorizontalScrollSection(
                     title: "Circulatory FirstAid",
-                    cards: ["CPR", "Cardiac Arrest"],
+                    cards: [
+                      {"label": "CPR", "image": "assets/images/cpr.png"},
+                      {
+                        "label": "Cardiac Arrest",
+                        "image": "assets/images/cardiac_arrest.png",
+                      },
+                    ],
                   ),
                   buildHorizontalScrollSection(
                     title: "Respiratory FirstAid",
-                    cards: ["Asthama Attack", "Choking"],
+                    cards: [
+                      {"label": "Asthma attack", "image": "assets/images/asthma.png"},
+                      {"label": "Choking", "image": "assets/images/snake.png"},
+                    ],
                   ),
                   buildHorizontalScrollSection(
                     title: "Other Help",
-                    cards: ["Allergy", "Burns"],
+                    cards: [
+                      {"label": "Allergy", "image": "assets/images/sprain.jpg"},
+                      {"label": "Burns", "image": "assets/images/burns.png"},
+                    ],
                   ),
                 ],
               ),
@@ -116,7 +127,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget buildHorizontalScrollSection({
     required String title,
-    required List<String> cards,
+    required List<Map<String, String>> cards, // Expect image & label
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -127,41 +138,95 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
               title,
-              style: const TextStyle(
-                fontFamily: 'Josefin Sans',
-                fontSize: 24,
-              ),
+              style: const TextStyle(fontFamily: 'Josefin Sans', fontSize: 24),
             ),
           ),
           SizedBox(
-            height: 150,
+            height: 160,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: cards.length,
               itemBuilder: (context, index) {
-                return Container(
-                  width: 237,
-                  height: 101,
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [
-                      Color(0xFF8BE6FF),
-                      Color(0xFF8BE6FF),
-                    ]),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Center(
-                    child: Text(
-                      cards[index],
-                      style: const TextStyle(
-                        fontFamily: 'Josefin Sans',
-                        fontSize: 20,
-                        color: Colors.black,
-                      ),
-                    ),
+                return Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: BlueCard(
+                    imagePath: cards[index]['image']!,
+                    label: cards[index]['label']!,
                   ),
                 );
               },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class BlueCard extends StatefulWidget {
+  final String imagePath;
+  final String label;
+
+  const BlueCard({required this.imagePath, required this.label, Key? key})
+    : super(key: key);
+
+  @override
+  _BlueCardState createState() => _BlueCardState();
+}
+
+class _BlueCardState extends State<BlueCard> {
+  bool isFavorited = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 237,
+      height: 130,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF8BE6FF), Color(0xFF8BE6FF)],
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Stack(
+        children: [
+          // Image
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.asset(widget.imagePath, fit: BoxFit.cover),
+            ),
+          ),
+          // Label at the bottom
+          Positioned(
+            bottom: 10,
+            left: 10,
+            child: Text(
+              widget.label,
+              style: const TextStyle(
+                fontFamily: 'Josefin Sans',
+                fontSize: 18,
+                color: Colors.white,
+                shadows: [Shadow(color: Colors.black, blurRadius: 4)],
+              ),
+            ),
+          ),
+          // Star at the top right
+          Positioned(
+            top: 8,
+            right: 8,
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  isFavorited = !isFavorited;
+                });
+              },
+              child: Icon(
+                isFavorited ? Icons.star : Icons.star_border,
+                color: isFavorited ? Colors.yellow[700] : Colors.white,
+                size: 28,
+              ),
             ),
           ),
         ],

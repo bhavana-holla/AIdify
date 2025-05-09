@@ -54,6 +54,23 @@ flutter:
   assets:
     - assets/images/logo_image1.png
     - assets/images/logo_image2.png
+    - assets/images/burns.png
+    - assets/images/fracture.jpg
+    - assets/images/sprain.jpg
+    - assets/images/snake.png
+    - assets/images/asthma.png
+    - assets/images/cpr.png
+    - assets/images/cardiac_arrest.png
+  #  - assets/images/bleeding.jpg
+  # - assets/images/poisoning.jpg
+  #  - assets/images/heart_attack.jpg
+  #  - assets/images/heat_stroke.jpg
+  #  - assets/images/epileptic_seizure.jpg
+  #  - assets/images/diabetic_shock.jpg
+  #  - assets/images/animal_bite.jpg
+  #  - assets/images/chemical_burn.jpg
+  #  - assets/images/eye_injury.jpg
+  
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
