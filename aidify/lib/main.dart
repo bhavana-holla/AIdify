@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
 import 'screens/detail_screen.dart';
+import 'screens/splash_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(FirstAidApp());
 }
 
@@ -17,7 +20,7 @@ class FirstAidApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      home: HomeScreen(),
+      home: const SplashScreen(),
       routes: {
         DetailScreen.routeName: (ctx) => DetailScreen(),
       },

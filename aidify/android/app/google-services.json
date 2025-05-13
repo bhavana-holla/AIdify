@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1082152006247",
+    "project_id": "aidify-ef75d",
+    "storage_bucket": "aidify-ef75d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1082152006247:android:ae40c8d9c0b5dbdd40dac2",
+        "android_client_info": {
+          "package_name": "com.example.aidify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9L9geQqZc2h1TPqjalNBB6KbZ1YbvNJ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
