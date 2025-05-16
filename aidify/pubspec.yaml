@@ -38,6 +38,7 @@ dependencies:
   firebase_core: ^3.13.0
   intl: ^0.20.2
   cloud_firestore: ^5.6.7
+  http: ^1.2.1
 
 dev_dependencies:
   flutter_test:
@@ -65,6 +66,7 @@ flutter:
     - assets/images/asthma.png
     - assets/images/cpr.png
     - assets/images/cardiac_arrest.png
+    - assets/data/topics.json
   #  - assets/images/bleeding.jpg
   # - assets/images/poisoning.jpg
   #  - assets/images/heart_attack.jpg

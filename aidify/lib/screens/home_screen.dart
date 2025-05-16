@@ -1,4 +1,8 @@
+import 'package:aidify/screens/bookmark_screen.dart';
+import 'package:aidify/screens/call_screen.dart';
+import 'package:aidify/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
+import 'topic_detail_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -69,7 +73,10 @@ class HomeScreen extends StatelessWidget {
                     title: "Quick Help",
                     cards: [
                       {"label": "Sprain", "image": "assets/images/sprain.jpg"},
-                      {"label": "Snake Bite", "image": "assets/images/snake.png"},
+                      {
+                        "label": "Snake Bite",
+                        "image": "assets/images/snake.png",
+                      },
                     ],
                   ),
                   buildHorizontalScrollSection(
@@ -85,7 +92,10 @@ class HomeScreen extends StatelessWidget {
                   buildHorizontalScrollSection(
                     title: "Respiratory FirstAid",
                     cards: [
-                      {"label": "Asthma attack", "image": "assets/images/asthma.png"},
+                      {
+                        "label": "Asthma attack",
+                        "image": "assets/images/asthma.png",
+                      },
                       {"label": "Choking", "image": "assets/images/snake.png"},
                     ],
                   ),
@@ -111,11 +121,35 @@ class HomeScreen extends StatelessWidget {
               color: Color.fromRGBO(229, 57, 53, 0.99),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: const [
+                children: [
                   Icon(Icons.home, color: Colors.white),
-                  Icon(Icons.bookmark, color: Colors.white),
-                  Icon(Icons.message, color: Colors.white),
-                  Icon(Icons.phone, color: Colors.white),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => BookmarksPage()),
+                      );
+                    },
+                    child: Icon(Icons.bookmark, color: Colors.white),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ChatScreen()),
+                      );
+                    },
+                    child: Icon(Icons.message, color: Colors.white),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => EmergencyScreen()),
+                      );
+                    },
+                    child: Icon(Icons.phone, color: Colors.white),
+                  ),
                 ],
               ),
             ),
@@ -179,57 +213,67 @@ class _BlueCardState extends State<BlueCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 237,
-      height: 130,
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF8BE6FF), Color(0xFF8BE6FF)],
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TopicDetailScreen(topicLabel: widget.label),
+          ),
+        );
+      },
+      child: Container(
+        width: 237,
+        height: 130,
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF8BE6FF), Color(0xFF8BE6FF)],
+          ),
+          borderRadius: BorderRadius.circular(20),
         ),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Stack(
-        children: [
-          // Image
-          Positioned.fill(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.asset(widget.imagePath, fit: BoxFit.cover),
-            ),
-          ),
-          // Label at the bottom
-          Positioned(
-            bottom: 10,
-            left: 10,
-            child: Text(
-              widget.label,
-              style: const TextStyle(
-                fontFamily: 'Josefin Sans',
-                fontSize: 18,
-                color: Colors.white,
-                shadows: [Shadow(color: Colors.black, blurRadius: 4)],
+        child: Stack(
+          children: [
+            // Image
+            Positioned.fill(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.asset(widget.imagePath, fit: BoxFit.cover),
               ),
             ),
-          ),
-          // Star at the top right
-          Positioned(
-            top: 8,
-            right: 8,
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  isFavorited = !isFavorited;
-                });
-              },
-              child: Icon(
-                isFavorited ? Icons.star : Icons.star_border,
-                color: isFavorited ? Colors.yellow[700] : Colors.white,
-                size: 28,
+            // Label at the bottom
+            Positioned(
+              bottom: 10,
+              left: 10,
+              child: Text(
+                widget.label,
+                style: const TextStyle(
+                  fontFamily: 'Josefin Sans',
+                  fontSize: 18,
+                  color: Colors.white,
+                  shadows: [Shadow(color: Colors.black, blurRadius: 4)],
+                ),
               ),
             ),
-          ),
-        ],
+            // Star at the top right
+            Positioned(
+              top: 8,
+              right: 8,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isFavorited = !isFavorited;
+                  });
+                },
+                child: Icon(
+                  isFavorited ? Icons.star : Icons.star_border,
+                  color: isFavorited ? Colors.yellow[700] : Colors.white,
+                  size: 28,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

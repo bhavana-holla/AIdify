@@ -1,0 +1,37 @@
+[
+  {
+    "title": "Asthma",
+    "imagePath": "assets/images/asthma.png",
+    "description": "1. Sit the person upright and stay calm.\n2. Give 4 puffs of a reliever inhaler (1 puff every 30-60 seconds).\n3. Wait 4 minutes. If there is no improvement, give 4 more puffs.\n4. If still no improvement, call emergency services.\n5. Continue giving 4 puffs every 4 minutes until help arrives."
+  },
+  {
+    "title": "Burns",
+    "imagePath": "assets/images/burns.png",
+    "description": "1. Cool the burn under cool running water for at least 20 minutes.\n2. Remove any tight clothing or jewelry near the burn site.\n3. Cover it with a sterile, non-stick dressing or cloth.\n4. Do not apply ice, creams, or greasy substances.\n5. Seek medical help if the burn is severe or covers a large area."
+  },
+  {
+    "title": "Cardiac Arrest",
+    "imagePath": "assets/images/cardiac_arrest.png",
+    "description": "1. Check for responsiveness and normal breathing.\n2. Call emergency services immediately.\n3. Begin CPR if unresponsive and not breathing normally.\n4. Use an AED if available and follow voice prompts.\n5. Continue CPR until professional help arrives or signs of life appear."
+  },
+  {
+    "title": "CPR",
+    "imagePath": "assets/images/cpr.png",
+    "description": "1. Place the heel of one hand in the center of the chest.\n2. Place your other hand on top and interlock fingers.\n3. Keep your arms straight and press down hard and fast — 100 to 120 compressions per minute.\n4. Give 30 compressions followed by 2 rescue breaths (if trained).\n5. Continue until help arrives or the person starts to breathe."
+  },
+  {
+    "title": "Fracture",
+    "imagePath": "assets/images/fracture.png",
+    "description": "1. Keep the injured area still and supported.\n2. Do not try to straighten the limb.\n3. Apply a splint if trained and needed to immobilize.\n4. Apply a cold pack wrapped in cloth to reduce swelling.\n5. Seek immediate medical attention."
+  },
+  {
+    "title": "Sprain",
+    "imagePath": "assets/images/sprain.png",
+    "description": "1. Follow the R.I.C.E method: Rest, Ice, Compression, Elevation.\n2. Rest the injured limb and avoid movement.\n3. Apply ice wrapped in a cloth for 15-20 minutes every 2-3 hours.\n4. Compress with an elastic bandage to reduce swelling.\n5. Elevate the limb above heart level.\n6. Consult a doctor if severe pain or swelling persists."
+  },
+  {
+    "title": "Snake Bite",
+    "imagePath": "assets/images/snake_bite.png",
+    "description": "1. Keep the person calm and still to slow venom spread.\n2. Immobilize the bitten limb and keep it below heart level.\n3. Do not suck or cut the bite area.\n4. Do not apply a tourniquet or ice.\n5. Call emergency services immediately and monitor vital signs."
+  }
+]
