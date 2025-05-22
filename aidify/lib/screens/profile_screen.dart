@@ -1,245 +1,136 @@
-/*import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../models/user_model.dart';
-import '../services/firestore_service.dart';
-
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
-
-  @override
-  State<ProfilePage> createState() => _ProfilePageState();
-}
-
-class _ProfilePageState extends State<ProfilePage> {
-  final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
-  final _dobController = TextEditingController();
-  final _bloodGroupController = TextEditingController();
-  final _rhFactorController = TextEditingController();
-  final _healthConcernsController = TextEditingController();
-  final _addressController = TextEditingController();
-
-  bool _loading = false;
-
-  void _loadProfile() async {
-    setState(() => _loading = true);
-    final user = await FirestoreService().getUserProfile();
-    if (user != null) {
-      _usernameController.text = user.username;
-      _dobController.text = user.dob;
-      _bloodGroupController.text = user.bloodGroup;
-      _rhFactorController.text = user.rhFactor;
-      _healthConcernsController.text = user.healthConcerns;
-      _addressController.text = user.address;
-    }
-    setState(() => _loading = false);
-  }
-
-  void _saveProfile() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return;
-
-    final user = UserModel(
-      uid: uid,
-      username: _usernameController.text,
-      dob: _dobController.text,
-      bloodGroup: _bloodGroupController.text,
-      rhFactor: _rhFactorController.text,
-      healthConcerns: _healthConcernsController.text,
-      address: _addressController.text,
-    );
-
-    setState(() => _loading = true);
-    await FirestoreService().saveUserProfile(user);
-    setState(() => _loading = false);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Profile updated!')),
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _loadProfile();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              _buildTextField("Username", _usernameController),
-              _buildTextField("Date of Birth", _dobController),
-              _buildTextField("Blood Group", _bloodGroupController),
-              _buildTextField("Rh Factor", _rhFactorController),
-              _buildTextField("Health Concerns", _healthConcernsController),
-              _buildTextField("Address", _addressController, lines: 2),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _saveProfile,
-                child: const Text('Save'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField(String label, TextEditingController controller, {int lines = 1}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: TextFormField(
-        controller: controller,
-        maxLines: lines,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(),
-        ),
-        validator: (value) => value == null || value.isEmpty ? 'Required' : null,
-      ),
-    );
-  }
-}*/
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../models/user_model.dart';
-import '../services/firestore_service.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+class ProfilePage extends StatelessWidget {
+  final String userId;
 
-  @override
-  State<ProfilePage> createState() => _ProfilePageState();
-}
+  const ProfilePage({super.key, required this.userId});
 
-class _ProfilePageState extends State<ProfilePage> {
-  final _formKey = GlobalKey<FormState>();
-  final _bloodGroupController = TextEditingController();
-  final _rhFactorController = TextEditingController();
-  final _healthConcernsController = TextEditingController();
-  final _addressController = TextEditingController();
-
-  String _username = '';
-  String _dob = '';
-  bool _loading = true;
-
-  void _loadProfile() async {
-    final user = await FirestoreService().getUserProfile();
-    if (user != null) {
-      setState(() {
-        _username = user.username;
-        _dob = user.dob;
-        _bloodGroupController.text = user.bloodGroup ?? '';
-        _rhFactorController.text = user.rhFactor ?? '';
-        _healthConcernsController.text = user.healthConcerns ?? '';
-        _addressController.text = user.address ?? '';
-        _loading = false;
-      });
+  int _calculateAge(DateTime dob) {
+    final today = DateTime.now();
+    int age = today.year - dob.year;
+    if (today.month < dob.month ||
+        (today.month == dob.month && today.day < dob.day)) {
+      age--;
     }
-  }
-
-  void _saveProfile() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return;
-
-    final updatedUser = UserModel(
-      uid: uid,
-      username: _username,
-      dob: _dob,
-      bloodGroup: _bloodGroupController.text.trim(),
-      rhFactor: _rhFactorController.text.trim(),
-      healthConcerns: _healthConcernsController.text.trim(),
-      address: _addressController.text.trim(),
-    );
-
-    setState(() => _loading = true);
-    await FirestoreService().updateUserProfile(updatedUser);
-    setState(() => _loading = false);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Profile updated!')),
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _loadProfile();
+    return age;
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              _buildStaticField("Username", _username),
-              _buildStaticField("Date of Birth", _dob),
-              _buildTextField("Blood Group", _bloodGroupController),
-              _buildTextField("Rh Factor", _rhFactorController),
-              _buildTextField("Health Concerns", _healthConcernsController),
-              _buildTextField("Address", _addressController, lines: 2),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _saveProfile,
-                child: const Text('Save'),
-              ),
-            ],
-          ),
+      backgroundColor: const Color(0xFFF6E2E2),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFF6E2E2),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.red),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              if (context.mounted) {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              }
+            },
+          )
+        ],
+      ),
+      body: FutureBuilder<DocumentSnapshot>(
+        future: FirebaseFirestore.instance.collection('users').doc(userId).get(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final userData = snapshot.data!.data() as Map<String, dynamic>;
+          final username = userData['username'] ?? 'User';
+          final email = userData['email'] ?? 'Email not available';
+          final dob = DateTime.tryParse(userData['dob']) ?? DateTime(2000);
+          final age = _calculateAge(dob);
+
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+
+                // Profile Icon
+                Container(
+                  width: width * 0.35,
+                  height: width * 0.35,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFF9DDEFF),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color.fromRGBO(84, 152, 167, 0.25),
+                        offset: const Offset(0, 15),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                  child: Icon(Icons.person, size: width * 0.23, color: Colors.black),
+                ),
+
+                const SizedBox(height: 20),
+
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFFF7F7),
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+                    border: Border(
+                      top: BorderSide(color: Color(0xFFFF0909), width: 6),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _buildProfileText(username, fontSize: 24, fontWeight: FontWeight.bold),
+                      const SizedBox(height: 8),
+                      _buildProfileText(email, color: Colors.black54),
+                      const SizedBox(height: 16),
+                      _buildProfileText("Age: $age years"),
+                      const SizedBox(height: 10),
+                      _buildProfileText("Blood Group: ${userData['blood_group'] ?? ''}"),
+                      const SizedBox(height: 10),
+                      _buildProfileText("Rh Factor: ${userData['rh_factor'] ?? ''}"),
+                      const SizedBox(height: 10),
+                      _buildProfileText("Health Concerns: ${userData['health_concerns'] ?? ''}"),
+                      const SizedBox(height: 10),
+                      _buildProfileText("Address: ${userData['address'] ?? ''}"),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, {int lines = 1}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: TextFormField(
-        controller: controller,
-        maxLines: lines,
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
-        ),
-        validator: (value) => value == null || value.isEmpty ? 'Required' : null,
-      ),
-    );
-  }
-
-  Widget _buildStaticField(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: TextFormField(
-        initialValue: value,
-        readOnly: true,
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
-        ),
+  Widget _buildProfileText(String text,
+      {double fontSize = 20,
+      FontWeight fontWeight = FontWeight.w400,
+      Color color = Colors.black}) {
+    return Text(
+      text,
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        fontFamily: 'Josefin Sans',
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        color: color,
       ),
     );
   }
 }
-
-
-
-
