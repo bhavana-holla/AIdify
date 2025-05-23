@@ -21,17 +21,82 @@
   },
   {
     "title": "Fracture",
-    "imagePath": "assets/images/fracture.png",
+    "imagePath": "assets/images/fracture.jpg",
     "description": "1. Keep the injured area still and supported.\n2. Do not try to straighten the limb.\n3. Apply a splint if trained and needed to immobilize.\n4. Apply a cold pack wrapped in cloth to reduce swelling.\n5. Seek immediate medical attention."
   },
   {
     "title": "Sprain",
-    "imagePath": "assets/images/sprain.png",
+    "imagePath": "assets/images/sprain.jpg",
     "description": "1. Follow the R.I.C.E method: Rest, Ice, Compression, Elevation.\n2. Rest the injured limb and avoid movement.\n3. Apply ice wrapped in a cloth for 15-20 minutes every 2-3 hours.\n4. Compress with an elastic bandage to reduce swelling.\n5. Elevate the limb above heart level.\n6. Consult a doctor if severe pain or swelling persists."
   },
   {
     "title": "Snake Bite",
-    "imagePath": "assets/images/snake_bite.png",
+    "imagePath": "assets/images/snake.png",
     "description": "1. Keep the person calm and still to slow venom spread.\n2. Immobilize the bitten limb and keep it below heart level.\n3. Do not suck or cut the bite area.\n4. Do not apply a tourniquet or ice.\n5. Call emergency services immediately and monitor vital signs."
+  },
+  {
+    "title": "Choking",
+    "imagePath": "assets/images/choking.png",
+    "description": "1. Ask the person if they are choking.\n2. If they cannot speak, give 5 back blows between the shoulder blades.\n3. Follow with 5 abdominal thrusts (Heimlich maneuver).\n4. Alternate between 5 back blows and 5 thrusts until the object is expelled or the person becomes unresponsive.\n5. If unresponsive, begin CPR and call emergency services."
+  },
+  {
+    "title": "Nosebleed",
+    "imagePath": "assets/images/nosebleed.png",
+    "description": "1. Sit the person down and lean them forward slightly.\n2. Pinch the soft part of the nose for 10-15 minutes.\n3. Encourage them to breathe through their mouth.\n4. Do not let them lie down or tilt their head back.\n5. Seek medical help if bleeding continues beyond 20 minutes or is very heavy."
+  },
+  {
+    "title": "Seizure",
+    "imagePath": "assets/images/seizure.png",
+    "description": "1. Stay calm and protect the person from injury.\n2. Do not restrain or put anything in their mouth.\n3. Cushion their head and loosen tight clothing.\n4. Turn them onto their side after the seizure ends.\n5. Call emergency services if the seizure lasts more than 5 minutes or if another begins immediately."
+  },
+  {
+    "title": "Heatstroke",
+    "imagePath": "assets/images/heatstroke.png",
+    "description": "1. Move the person to a cool, shaded area.\n2. Remove excess clothing.\n3. Cool with water, fans, or wet cloths.\n4. Give small sips of cool water if conscious.\n5. Call emergency services immediately."
+  },
+  {
+    "title": "Eye Injuries",
+    "imagePath": "assets/images/eye_injury.png",
+    "description": "1. Do not rub or apply pressure to the eye.\n2. Flush with clean water if there’s a chemical exposure.\n3. Cover with a sterile dressing or eye shield.\n4. Do not attempt to remove embedded objects.\n5. Seek immediate medical attention."
+  },
+  {
+    "title": "Head Injuries",
+    "imagePath": "assets/images/head_injury.png",
+    "description": "1. Keep the person still and calm.\n2. Apply a cold pack to reduce swelling.\n3. Monitor for signs of concussion (confusion, vomiting, drowsiness).\n4. Do not let the person sleep if unconscious or confused.\n5. Call emergency services if symptoms worsen."
+  },
+  {
+    "title": "Spinal Injuries",
+    "imagePath": "assets/images/spinal_injury.png",
+    "description": "1. Do not move the person unless in immediate danger.\n2. Support the head and neck to prevent movement.\n3. Call emergency services immediately.\n4. Keep the person still and calm.\n5. Monitor breathing and be prepared to provide CPR."
+  },
+  {
+    "title": "Electric Shock",
+    "imagePath": "assets/images/electric_shock.png",
+    "description": "1. Do not touch the person until the power source is turned off.\n2. Call emergency services immediately.\n3. Check for responsiveness and breathing.\n4. Begin CPR if necessary.\n5. Treat any burns with cool water and cover with a clean cloth."
+  },
+  {
+    "title": "Hypothermia",
+    "imagePath": "assets/images/hypothermia.png",
+    "description": "1. Move the person to a warm, sheltered area.\n2. Remove wet clothing and wrap in warm blankets.\n3. Warm the center of the body first (chest, neck, head).\n4. Give warm drinks if conscious.\n5. Seek immediate medical help."
+  },
+  {
+    "title": "Poisoning",
+    "imagePath": "assets/images/poisoning.png",
+    "description": "1. Identify the poison if possible.\n2. Do not induce vomiting unless instructed.\n3. Call emergency services or poison control.\n4. If unconscious, place in recovery position.\n5. Monitor breathing and be ready to perform CPR."
+  },
+  {
+    "title": "Bites and Stings",
+    "imagePath": "assets/images/bites_stings.png",
+    "description": "1. Wash the area with soap and water.\n2. Apply a cold pack to reduce swelling and pain.\n3. Remove stinger if visible (scrape, don’t squeeze).\n4. Monitor for allergic reactions.\n5. Seek medical help if swelling spreads or severe symptoms occur."
+  },
+  {
+    "title": "Unconsciousness and Recovery Position",
+    "imagePath": "assets/images/recovery_position.png",
+    "description": "1. Check for responsiveness and breathing.\n2. Call emergency services.\n3. If breathing and no spinal injury suspected, place in recovery position.\n4. Tilt head back to keep airway open.\n5. Monitor until help arrives."
+  },
+  {
+    "title": "First Aid Kit Usage",
+    "imagePath": "assets/images/first_aid_kit.png",
+    "description": "1. Use gloves to protect yourself and the patient.\n2. Clean wounds with antiseptic wipes.\n3. Use bandages, gauze, and dressings to cover wounds.\n4. Use cold packs for swelling.\n5. Replenish used items promptly and store the kit in an accessible location."
   }
 ]

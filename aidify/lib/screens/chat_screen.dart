@@ -158,7 +158,7 @@ class _ChatScreenState extends State<ChatScreen> {
         backgroundColor: const Color(0xFFF6E2E2),
         leading: Padding(
           padding: const EdgeInsets.all(12),
-          child: Image.asset('assets/images/logo_image2.png'),
+          child: Image.asset('assets/images/logo_image1.png'),
         ),
         title: const Text(
           'ChatBot',
@@ -170,7 +170,7 @@ class _ChatScreenState extends State<ChatScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ProfilePage()),
+                MaterialPageRoute(builder: (context) => const ProfilePage(userId: '',)),
               );
             },
           ),
@@ -234,7 +234,7 @@ class _ChatScreenState extends State<ChatScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const EmergencyScreen()),
+                  MaterialPageRoute(builder: (context) => const EmergencyContactsApp()),
                 );
               },
             ),

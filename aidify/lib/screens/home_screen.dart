@@ -1,11 +1,51 @@
+import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:aidify/screens/bookmark_screen.dart';
 import 'package:aidify/screens/call_screen.dart';
 import 'package:aidify/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'topic_detail_screen.dart';
+import 'package:aidify/screens/profile_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final TextEditingController _searchController = TextEditingController();
+
+  List<Map<String, dynamic>> allTopics = [];
+  List<Map<String, dynamic>> filteredTopics = [];
+  bool isSearching = false;
+
+  @override
+  void initState() {
+    super.initState();
+    loadTopics();
+  }
+
+  Future<void> loadTopics() async {
+    final String jsonString = await rootBundle.loadString('assets/data/topics.json');
+    final List<dynamic> jsonList = jsonDecode(jsonString);
+    setState(() {
+      allTopics = List<Map<String, dynamic>>.from(jsonList);
+      filteredTopics = allTopics;
+    });
+  }
+
+  void _onSearchChanged(String value) {
+    setState(() {
+      isSearching = value.trim().isNotEmpty;
+      filteredTopics = allTopics
+          .where((topic) =>
+              topic['title'].toString().toLowerCase().contains(value.trim().toLowerCase()))
+          .toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,20 +62,33 @@ class HomeScreen extends StatelessWidget {
             right: 0,
             height: 80,
             child: Container(
-              color: Color(0xFFF6E2E2),
+              color: const Color(0xFFF6E2E2),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16, top: 12),
+                  // Logo
+                  SizedBox(
+                    height: 50,
                     child: Image.asset(
                       'assets/images/logo_image1.png',
-                      height: 49.77,
+                      fit: BoxFit.contain,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 16, top: 15),
-                    child: Icon(Icons.person),
+                  // Profile Icon
+                  IconButton(
+                    icon: const Icon(Icons.person_outline, color: Colors.black, size: 32),
+                    onPressed: () {
+                      final user = FirebaseAuth.instance.currentUser;
+                      if (user != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProfilePage(userId: user.uid),
+                          ),
+                        );
+                      }
+                    },
                   ),
                 ],
               ),
@@ -54,62 +107,106 @@ class HomeScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(50),
               ),
               child: Padding(
-                padding: const EdgeInsets.only(right: 0, top: 13),
-                child: Icon(Icons.search_outlined, size: 30),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Quick search First Aid...',
+                    border: InputBorder.none,
+                    icon: Icon(Icons.search_outlined, size: 30),
+                  ),
+                  onChanged: _onSearchChanged,
+                ),
               ),
             ),
           ),
 
-          // Scrollable sections
-          Positioned(
-            top: 225,
-            left: 0,
-            right: 0,
-            bottom: 60,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  buildHorizontalScrollSection(
-                    title: "Quick Help",
-                    cards: [
-                      {"label": "Sprain", "image": "assets/images/sprain.jpg"},
-                      {
-                        "label": "Snake Bite",
-                        "image": "assets/images/snake.png",
-                      },
-                    ],
-                  ),
-                  buildHorizontalScrollSection(
-                    title: "Circulatory FirstAid",
-                    cards: [
-                      {"label": "CPR", "image": "assets/images/cpr.png"},
-                      {
-                        "label": "Cardiac Arrest",
-                        "image": "assets/images/cardiac_arrest.png",
-                      },
-                    ],
-                  ),
-                  buildHorizontalScrollSection(
-                    title: "Respiratory FirstAid",
-                    cards: [
-                      {
-                        "label": "Asthma attack",
-                        "image": "assets/images/asthma.png",
-                      },
-                      {"label": "Choking", "image": "assets/images/snake.png"},
-                    ],
-                  ),
-                  buildHorizontalScrollSection(
-                    title: "Other Help",
-                    cards: [
-                      {"label": "Allergy", "image": "assets/images/sprain.jpg"},
-                      {"label": "Burns", "image": "assets/images/burns.png"},
-                    ],
-                  ),
-                ],
+          // Search results list
+          if (isSearching)
+            Positioned(
+              top: 200,
+              left: 23,
+              right: 23,
+              bottom: 100,
+              child: Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                child: filteredTopics.isEmpty
+                    ? Center(child: Text("No topics found."))
+                    : ListView.builder(
+                        itemCount: filteredTopics.length,
+                        itemBuilder: (context, index) {
+                          final topic = filteredTopics[index];
+                          return ListTile(
+                            leading: topic['imagePath'] != null
+                                ? Image.asset(topic['imagePath'], width: 40, height: 40)
+                                : null,
+                            title: Text(topic['title']),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TopicDetailScreen(topicLabel: topic['title']),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
               ),
             ),
-          ),
+
+          // Only show scrollable sections if not searching
+          if (!isSearching)
+            Positioned(
+              top: 225,
+              left: 0,
+              right: 0,
+              bottom: 60,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    buildHorizontalScrollSection(
+                      title: "Quick Help",
+                      cards: [
+                        {"label": "Sprain", "image": "assets/images/sprain.jpg"},
+                        {
+                          "label": "Snake Bite",
+                          "image": "assets/images/snake.png",
+                        },
+                      ],
+                    ),
+                    buildHorizontalScrollSection(
+                      title: "Circulatory FirstAid",
+                      cards: [
+                        {"label": "CPR", "image": "assets/images/cpr.png"},
+                        {
+                          "label": "Cardiac Arrest",
+                          "image": "assets/images/cardiac_arrest.png",
+                        },
+                      ],
+                    ),
+                    buildHorizontalScrollSection(
+                      title: "Respiratory FirstAid",
+                      cards: [
+                        {
+                          "label": "Asthma attack",
+                          "image": "assets/images/asthma.png",
+                        },
+                        {"label": "Choking", "image": "assets/images/snake.png"},
+                      ],
+                    ),
+                    buildHorizontalScrollSection(
+                      title: "Other Help",
+                      cards: [
+                        {"label": "Allergy", "image": "assets/images/sprain.jpg"},
+                        {"label": "Burns", "image": "assets/images/burns.png"},
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
 
           // Bottom Navbar
           Positioned(
@@ -145,7 +242,7 @@ class HomeScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => EmergencyScreen()),
+                        MaterialPageRoute(builder: (context) => EmergencyContactsApp()),
                       );
                     },
                     child: Icon(Icons.phone, color: Colors.white),
