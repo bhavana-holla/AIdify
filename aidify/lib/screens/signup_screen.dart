@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
 import 'login_screen.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -13,181 +12,263 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _dobController = TextEditingController();
+  bool _loading = false;
+  String? _error;
   DateTime? _selectedDate;
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime(2000),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != _selectedDate) {
+  Future<void> _signup() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+        'username': _usernameController.text.trim(),
+        'email': _emailController.text.trim(),
+        'dob': _dobController.text.trim(),
+      });
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginPage()),
+      );
+    } on FirebaseAuthException catch (e) {
       setState(() {
-        _selectedDate = picked;
+        _error = e.message;
+      });
+    } finally {
+      setState(() {
+        _loading = false;
       });
     }
   }
 
-  Future<void> _signup() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        UserCredential userCredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-        );
-
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userCredential.user!.uid)
-            .set({
-          'username': _usernameController.text.trim(),
-          'email': _emailController.text.trim(),
-          'dob': _selectedDate?.toIso8601String(),
-          'createdAt': Timestamp.now(),
-        });
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const LoginPage()),
-        );
-      } on FirebaseAuthException catch (e) {
-        ScaffoldMessenger.of(context,).showSnackBar(
-          SnackBar(content: Text(e.message ?? 'Sign up failed')),
-        );
-      }
-    }
+  Widget _buildDOBField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Date of Birth",
+          style: TextStyle(fontSize: 18, color: Color(0xFF522F2F)),
+        ),
+        const SizedBox(height: 8),
+        GestureDetector(
+          onTap: () async {
+            FocusScope.of(context).unfocus();
+            final picked = await showDatePicker(
+              context: context,
+              initialDate: _selectedDate ?? DateTime(2000, 1, 1),
+              firstDate: DateTime(1900),
+              lastDate: DateTime.now(),
+            );
+            if (picked != null) {
+              setState(() {
+                _selectedDate = picked;
+                _dobController.text = "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+              });
+            }
+          },
+          child: AbsorbPointer(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(25),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 6,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: TextFormField(
+                controller: _dobController,
+                validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.cake_outlined, color: Color(0xFFEF4C4C)),
+                  border: InputBorder.none,
+                  hintText: "YYYY-MM-DD",
+                  hintStyle: TextStyle(
+                    fontSize: 16,
+                    color: Color(0xFF7B7676),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(vertical: 18),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFFFEFEF), Color(0xFFEF4C4C)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+      body: SafeArea(
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFFFFEFEF), Color(0xFFEF4C4C)],
+            ),
           ),
-        ),
-        child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  const SizedBox(height: 30),
-                  SizedBox(
-                    width: 160,
-                    height: 161,
-                    child: Image.asset('assets/images/logo_image1.png'),
-                  ),
-                  const SizedBox(height: 30),
-                  _buildTextField(
-                    label: 'Username',
-                    hint: 'Enter your name',
-                    controller: _usernameController,
-                    validator: (value) =>
-                        value!.isEmpty ? 'Username is required' : null,
-                  ),
-                  const SizedBox(height: 20),
-                  _buildTextField(
-                    label: 'Email ID',
-                    hint: 'Enter your email',
-                    controller: _emailController,
-                    validator: (value) =>
-                        value!.isEmpty || !value.contains('@')
-                            ? 'Enter a valid email'
-                            : null,
-                  ),
-                  const SizedBox(height: 20),
-                  _buildTextField(
-                    label: 'Password',
-                    hint: 'Enter your password',
-                    controller: _passwordController,
-                    obscureText: true,
-                    validator: (value) =>
-                        value!.length < 6 ? 'Password too short' : null,
-                  ),
-                  const SizedBox(height: 20),
-                  GestureDetector(
-                    onTap: () => _selectDate(context),
+            child: Column(
+              children: [
+                const SizedBox(height: 50),
+                Hero(
+                  tag: 'appLogo',
+                  child: Material(
+                    color: Colors.transparent,
                     child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 24),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                      child: Text(
-                        _selectedDate != null
-                            ? 'DOB: ${DateFormat('yMMMd').format(_selectedDate!)}'
-                            : 'Tap to select your date of birth',
-                        style: const TextStyle(
-                          color: Color(0xFF522F2F),
-                          fontSize: 20,
-                          fontFamily: 'Jaldi',
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  GestureDetector(
-                    onTap: _signup,
-                    child: Container(
-                      width: 157,
-                      height: 53,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1FB757),
-                        borderRadius: BorderRadius.circular(75),
-                        boxShadow: const [
+                        shape: BoxShape.circle,
+                        boxShadow: [
                           BoxShadow(
-                            color: Colors.black26,
-                            offset: Offset(0, 4),
-                            blurRadius: 4,
+                            color: Colors.red.withOpacity(0.2),
+                            blurRadius: 30,
+                            spreadRadius: 5,
                           ),
                         ],
                       ),
-                      child: const Center(
-                        child: Text(
-                          'SIGN UP',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 32,
-                            fontFamily: 'Jaldi',
-                          ),
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/images/logo_image1.png',
+                          width: 120,
+                          height: 120,
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 30),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => const LoginPage()),
-                      );
-                    },
-                    child: const Text(
-                      'Already have an account? Login',
-                      style: TextStyle(
-                        color: Color(0xFF0026FF),
-                        fontSize: 16,
-                        fontFamily: 'Julius Sans One',
+                ),
+                const SizedBox(height: 40),
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  margin: const EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(32),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 12,
+                        offset: Offset(0, 6),
                       ),
+                    ],
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        _buildTextField(
+                          label: "Username",
+                          hint: "Enter your username",
+                          controller: _usernameController,
+                          icon: Icons.person_outline,
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 20),
+                        _buildTextField(
+                          label: "Email ID",
+                          hint: "Enter your email",
+                          controller: _emailController,
+                          icon: Icons.email_outlined,
+                          validator: (v) => v!.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 20),
+                        _buildTextField(
+                          label: "Password",
+                          hint: "Enter your password",
+                          controller: _passwordController,
+                          icon: Icons.lock_outline,
+                          obscureText: true,
+                          validator: (v) => v != null && v.length < 6 ? 'Min 6 characters' : null,
+                        ),
+                        const SizedBox(height: 20),
+                        _buildDOBField(),
+                        if (_error != null) ...[
+                          const SizedBox(height: 10),
+                          Text(_error!, style: const TextStyle(color: Colors.red)),
+                        ],
+                        const SizedBox(height: 30),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              elevation: 2,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              textStyle: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.1,
+                              ),
+                            ),
+                            onPressed: _loading ? null : _signup,
+                            child: _loading
+                                ? const SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                  )
+                                : const Text("SIGN UP"),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Already have an account?",
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const LoginPage()),
+                                );
+                              },
+                              style: TextButton.styleFrom(
+                                foregroundColor: const Color.fromARGB(255, 4, 87, 176),
+                                textStyle: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              child: const Text("Login"),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 30),
-                ],
-              ),
+                ),
+                const SizedBox(height: 30),
+              ],
             ),
           ),
         ),
@@ -199,39 +280,43 @@ class _SignupScreenState extends State<SignupScreen> {
     required String label,
     required String hint,
     required TextEditingController controller,
-    bool obscureText = false,
+    required IconData icon,
     String? Function(String?)? validator,
+    bool obscureText = false,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontFamily: 'Jaldi',
-            fontSize: 20,
-            color: Color(0xFF522F2F),
-          ),
+          style: const TextStyle(fontSize: 18, color: Color(0xFF522F2F)),
         ),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.5),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(25),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+            ],
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: TextFormField(
             controller: controller,
             obscureText: obscureText,
             validator: validator,
             decoration: InputDecoration(
-              hintText: hint,
+              prefixIcon: Icon(icon, color: Color(0xFFEF4C4C)),
               border: InputBorder.none,
+              hintText: hint,
               hintStyle: const TextStyle(
-                fontFamily: 'Jaldi',
-                fontSize: 20,
+                fontSize: 16,
                 color: Color(0xFF7B7676),
               ),
+              contentPadding: const EdgeInsets.symmetric(vertical: 18),
             ),
           ),
         ),

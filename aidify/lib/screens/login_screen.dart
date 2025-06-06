@@ -45,8 +45,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: SafeArea(
@@ -64,72 +64,138 @@ class _LoginPageState extends State<LoginPage> {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               children: [
-                const SizedBox(height: 40),
+                const SizedBox(height: 50),
                 Hero(
                   tag: 'appLogo',
-                  child: SizedBox(
-                    width: 160,
-                    height: 161,
-                    child: Image.asset('assets/images/logo_image1.png'),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.red.withOpacity(0.2),
+                            blurRadius: 30,
+                            spreadRadius: 5,
+                          ),
+                        ],
+                      ),
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/images/logo_image1.png',
+                          width: 120,
+                          height: 120,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 40),
-                _buildTextField(
-                  "Email ID",
-                  "Enter your email",
-                  _emailController,
-                ),
-                const SizedBox(height: 24),
-                _buildTextField(
-                  "Password",
-                  "Enter your password",
-                  _passwordController,
-                  obscureText: true,
-                ),
-                if (_error != null) ...[
-                  const SizedBox(height: 10),
-                  Text(_error!, style: const TextStyle(color: Colors.white)),
-                ],
-                const SizedBox(height: 30),
-                _loading
-                    ? const CircularProgressIndicator()
-                    : ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 50,
-                          vertical: 15,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        backgroundColor: const Color(0xFF1FB757),
-                      ),
-                      onPressed: _login,
-                      child: const Text(
-                        "LOGIN",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                const SizedBox(height: 20),
-                GestureDetector(
-                  onTap: () {
-                    // Navigate to SignUpScreen
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const SignupScreen()),
-                    );
-                  },
-                  child: Column(
-                    children: const [
-                      Text(
-                        "Are you a new User?",
-                        style: TextStyle(color: Color(0xFF0026FF)),
-                      ),
-                      Text(
-                        "Click here to SignUp",
-                        style: TextStyle(color: Color(0xFF0026FF)),
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  margin: const EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(32),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 12,
+                        offset: Offset(0, 6),
                       ),
                     ],
+                  ),
+                  child: Form(
+                    child: Column(
+                      children: [
+                        _buildTextField(
+                          label: "Email ID",
+                          hint: "Enter your email",
+                          controller: _emailController,
+                          icon: Icons.email_outlined,
+                        ),
+                        const SizedBox(height: 20),
+                        _buildTextField(
+                          label: "Password",
+                          hint: "Enter your password",
+                          controller: _passwordController,
+                          icon: Icons.lock_outline,
+                          obscureText: true,
+                        ),
+                        if (_error != null) ...[
+                          const SizedBox(height: 10),
+                          Text(
+                            _error!,
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        ],
+                        const SizedBox(height: 30),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              elevation: 2,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              textStyle: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.1,
+                              ),
+                            ),
+                            onPressed: _loading ? null : _login,
+                            child:
+                                _loading
+                                    ? const SizedBox(
+                                      width: 22,
+                                      height: 22,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                    : const Text("LOGIN"),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Don't have an account?",
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const SignupScreen(),
+                                  ),
+                                );
+                              },
+                              style: TextButton.styleFrom(
+                                foregroundColor: const Color.fromARGB(255, 4, 87, 176),
+                                textStyle: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              child: const Text("Signup"),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -141,10 +207,11 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildTextField(
-    String label,
-    String hint,
-    TextEditingController controller, {
+  Widget _buildTextField({
+    required String label,
+    required String hint,
+    required TextEditingController controller,
+    required IconData icon,
     bool obscureText = false,
   }) {
     return Column(
@@ -157,20 +224,28 @@ class _LoginPageState extends State<LoginPage> {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.5),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(25),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+            ],
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: TextField(
+          child: TextFormField(
             controller: controller,
             obscureText: obscureText,
             decoration: InputDecoration(
+              prefixIcon: Icon(icon, color: Color(0xFFEF4C4C)),
               border: InputBorder.none,
               hintText: hint,
               hintStyle: const TextStyle(
                 fontSize: 16,
                 color: Color(0xFF7B7676),
               ),
+              contentPadding: const EdgeInsets.symmetric(vertical: 18),
             ),
           ),
         ),

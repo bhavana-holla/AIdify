@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'topic_detail_screen.dart';
 import 'package:aidify/screens/profile_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../models/bookmark_manager.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -60,38 +61,40 @@ class _HomeScreenState extends State<HomeScreen> {
             top: 0,
             left: 0,
             right: 0,
-            height: 80,
-            child: Container(
-              color: const Color(0xFFF6E2E2),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Logo
-                  SizedBox(
-                    height: 50,
-                    child: Image.asset(
-                      'assets/images/logo_image1.png',
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                  // Profile Icon
-                  IconButton(
-                    icon: const Icon(Icons.person_outline, color: Colors.black, size: 32),
-                    onPressed: () {
-                      final user = FirebaseAuth.instance.currentUser;
-                      if (user != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProfilePage(userId: user.uid),
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                ],
+            height: 100,
+            child: AppBar(
+              backgroundColor: const Color(0xFFF6E2E2),
+              elevation: 0,
+              
+              leading: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Image.asset('assets/images/logo_image1.png'),
               ),
+              title: const Text(
+                'AIdify',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                  fontSize: 22,
+                ),
+              ),
+              centerTitle: true,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.person_outline, color: Colors.black),
+                  onPressed: () {
+                    final user = FirebaseAuth.instance.currentUser;
+                    if (user != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProfilePage(userId: user.uid),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
             ),
           ),
 
@@ -103,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 320,
               height: 59,
               decoration: BoxDecoration(
-                color: Color(0xFFD9D9D9),
+                color: Color(0xFFD8EEFF),
                 borderRadius: BorderRadius.circular(50),
               ),
               child: Padding(
@@ -299,14 +302,33 @@ class BlueCard extends StatefulWidget {
   final String label;
 
   const BlueCard({required this.imagePath, required this.label, Key? key})
-    : super(key: key);
+      : super(key: key);
 
   @override
   _BlueCardState createState() => _BlueCardState();
 }
 
 class _BlueCardState extends State<BlueCard> {
-  bool isFavorited = false;
+  late bool isFavorited;
+
+  @override
+  void initState() {
+    super.initState();
+    isFavorited = BookmarkManager().isBookmarked(widget.label);
+    BookmarkManager().addListener(_updateBookmark);
+  }
+
+  @override
+  void dispose() {
+    BookmarkManager().removeListener(_updateBookmark);
+    super.dispose();
+  }
+
+  void _updateBookmark() {
+    setState(() {
+      isFavorited = BookmarkManager().isBookmarked(widget.label);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -357,10 +379,12 @@ class _BlueCardState extends State<BlueCard> {
               top: 8,
               right: 8,
               child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    isFavorited = !isFavorited;
-                  });
+                onTap: () async {
+                  if (isFavorited) {
+                    await BookmarkManager().removeBookmark(context, widget.label);
+                  } else {
+                    BookmarkManager().addBookmark(widget.label);
+                  }
                 },
                 child: Icon(
                   isFavorited ? Icons.star : Icons.star_border,
