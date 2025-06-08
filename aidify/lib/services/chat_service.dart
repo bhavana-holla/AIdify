@@ -44,7 +44,7 @@ import 'package:http/http.dart' as http;
 
 class ChatService {
   //  Replace with your actual API key.  It's best to load this from an environment variable.
-  static const String _apiKey = 'AIzaSyDO8uuSRqnt6i8DDE5AfTeOLEniZNObV54'; //  <---  Replace this!
+  static const String _apiKey = 'AIzaSyDifXXq0Oa72zKaAB15vb2E0mmN5F9PhyM'; //  <---  Replace this!
 
   //  The correct base URL for the Gemini API.
   static const String _baseUrl =
