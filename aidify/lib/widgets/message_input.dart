@@ -4,12 +4,14 @@ class MessageInput extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onSend;
   final bool isLoading;
+  final VoidCallback onImagePick;
 
   const MessageInput({
     super.key,
     required this.controller,
     required this.onSend,
     required this.isLoading,
+    required this.onImagePick,
   });
 
   @override
@@ -21,9 +23,8 @@ class MessageInput extends StatelessWidget {
           children: [
             IconButton(
               icon: const Icon(Icons.camera_alt, color: Colors.black54),
-              onPressed: () {
-                // Optionally implement image input
-              },
+              onPressed: onImagePick,
+
             ),
             Expanded(
               child: TextField(
