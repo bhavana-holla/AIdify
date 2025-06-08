@@ -38,7 +38,7 @@ class ChatService {
   }
 }
 */
-/*
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -126,64 +126,4 @@ void main() async {
   } catch (e) {
     print("Error: $e"); //  The error is already handled *within* sendMessage, so this might not be needed.
   }
-}*/
-
-
-
-
-
-
-
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-
-class ChatService {
-  // Paste your Gemini API key here
-  static const String _apiKey = 'AIzaSyDifXXq0Oa72zKaAB15vb2E0mmN5F9PhyM';
-
-  // Updated Gemini v1beta flash endpoint
-  static const String _baseUrl =
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-
-  static Future<String> sendMessage(String userInput) async {
-    final Uri url = Uri.parse('$_baseUrl?key=$_apiKey');
-
-    final Map<String, dynamic> body = {
-      'contents': [
-        {
-          'parts': [
-            {'text': userInput}
-          ]
-        }
-      ]
-    };
-
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(body),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final text = data['candidates']?[0]?['content']?['parts']?[0]?['text'];
-        return text ?? 'No response from Gemini.';
-      } else {
-        print('Gemini API error: ${response.statusCode} - ${response.body}');
-        return 'Gemini API error: ${response.statusCode}';
-      }
-    } catch (e) {
-      print('Error sending request to Gemini API: $e');
-      return 'Error sending request: $e';
-    }
-  }
 }
-
-// Optional: Run this in DartPad or Flutter console to test it standalone
-void main() async {
-  String prompt = "Write a short poem about stars.";
-  String reply = await ChatService.sendMessage(prompt);
-  print("Gemini Reply:\n$reply");
-}
-
